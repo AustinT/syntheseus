@@ -47,6 +47,10 @@ class RetroStarSearch(
         self.and_node_cost_fn = and_node_cost_fn
 
     @property
+    def requires_tree(self) -> bool:
+        return False
+
+    @property
     def reaction_number_estimator(self) -> BaseNodeEvaluator[OrNode]:
         """Alias for value function (they use this term in the paper)"""
         return self.value_function
@@ -200,9 +204,8 @@ def reaction_number_update(node: ANDOR_NODE, graph: AndOrGraph) -> bool:
 def retro_star_value_update(node: ANDOR_NODE, graph: AndOrGraph) -> bool:
     """
     Updates a node's "retro_star_value",
-    which is the lowest total cost of any tree containing this node,
-    rooted at the root node, assuming that the current costs of each node
-    are correct (which is probably not the case for unexpanded nodes).
+    which is the lowest total cost of any minimal AND/OR graph containing this node,
+    rooted at the root node, assuming that the cost of any leaf node is its reaction number.
     This is called V(m|T) in the original Retro* paper (Chen et al 2020).
 
     Returns whether the node's retro_star_value changed.
@@ -229,20 +232,13 @@ def retro_star_value_update(node: ANDOR_NODE, graph: AndOrGraph) -> bool:
             new_value = math.inf
 
     elif isinstance(node, OrNode):
-        # r* Value estimate is parent's value (this has no double counting)
-        # Except the root node: it's r* value estimate is just its RN
+        # r* Value estimate is minimum r* value of its parents,
+        # except the root node: it's r* value estimate is just its RN
         if len(parents) == 0:
             # Root node
             new_value = node.data["reaction_number"]
-        elif len(parents) == 1:
-            # r* is parent's r*
-            parent = parents[0]
-            assert isinstance(parent, AndNode)
-            new_value = parent.data["retro_star_value"]
         else:
-            raise ValueError(
-                f"Nodes with multiple parents not supported. {node} has {len(parents)} parents."
-            )
+            new_value = min(p.data["retro_star_value"] for p in parents)
 
     else:
         raise TypeError("Unexpected node type")
