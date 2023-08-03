@@ -32,8 +32,10 @@ class _NodeData_Algorithms(TypedDict, total=False):
     reaction_number: float
     reaction_number_estimate: float
     retro_star_value: float
+    best_retro_star_value: float
     retro_star_rxn_cost: float
     retro_star_mol_cost: float
+    retro_star_can_expand: bool
 
     # ==================================================
     # MCTS
