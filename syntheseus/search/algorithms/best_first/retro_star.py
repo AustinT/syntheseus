@@ -194,31 +194,41 @@ class RetroStarSearch(
     def _descend_tree_and_choose_node(self, graph) -> OrNode:
         """Returns a leaf node on the optimal expansion route."""
 
-        # Descend the tree along the optimal route to find candidate nodes
+        # Descend the tree along the optimal route to find candidate nodes,
+        # ensuring not to visit duplicate nodes.
         candidate_nodes: list[OrNode] = []
         nodes_to_descend: deque[OrNode] = deque([graph.root_node])
+        visited_nodes: set[OrNode] = set()
         target_retro_star_value = graph.root_node.data["best_retro_star_value"]
         while len(nodes_to_descend) > 0:
             node = nodes_to_descend.popleft()
+
+            # Has the node been visited before?
+            # If so skip it (don't process it multiple times).
+            # If not, add it to the set of visited nodes.
+            if node in visited_nodes:
+                continue
+            visited_nodes.add(node)
+
             children = list(graph.successors(node))
-            if len(children) == 0:
+            if self.can_expand_node(node, graph):
                 # No children, so this is a candidate node
                 candidate_nodes.append(node)
-            else:
-                # Find AndChildren with matching best retro star value
+            elif len(children) > 0:
+                # Find AND children with matching best retro star value
                 matching_children = [
                     child
                     for child in children
                     if math.isclose(child.data["best_retro_star_value"], target_retro_star_value)
                 ]
                 assert len(matching_children) > 0
-                chosen_and = matching_children[0]  # arbitrary tie-breaking
-                for grandchild in graph.successors(chosen_and):
-                    if math.isclose(
-                        grandchild.data["best_retro_star_value"], target_retro_star_value
-                    ):
-                        assert isinstance(grandchild, OrNode)
-                        nodes_to_descend.append(grandchild)
+                for and_node in matching_children:
+                    for grandchild in graph.successors(and_node):
+                        if math.isclose(
+                            grandchild.data["best_retro_star_value"], target_retro_star_value
+                        ):
+                            assert isinstance(grandchild, OrNode)
+                            nodes_to_descend.append(grandchild)
 
         # Now there should be at least one candidate node
         assert len(candidate_nodes) > 0
@@ -305,7 +315,7 @@ class RetroStarSearch(
                 + [node]
                 + list(
                     min_cost_ancestors
-                ),  # type: ignre[arg-type]  # confusion about AndOrGraph type
+                ),  # type: ignore[arg-type]  # confusion about AndOrGraph type
                 graph,
             )
 
