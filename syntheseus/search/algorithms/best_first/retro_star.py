@@ -284,30 +284,29 @@ class RetroStarSearch(
         # Run search until time limit or queue is empty
         step = 0
         for step in range(self.limit_iterations):
-            if self.should_stop_search(graph) or math.isinf(
-                graph.root_node.data["best_retro_star_value"]
-            ):  # means nothing left to expand
+            eligible_nodes = [n for n in graph.nodes() if self.can_expand_node(n, graph)]
+            if self.should_stop_search(graph) or len(eligible_nodes) == 0:
                 break
 
-            # Descend the tree to reach a node
-            node = self._descend_tree_and_choose_node(graph)
+            # Choose node with smallest retro_star_value
+            # node = self._descend_tree_and_choose_node(graph)
+            node = min(
+                eligible_nodes,
+                key=lambda n: (n.data["retro_star_value"], n.creation_time),
+            )
 
             # Visit node
             new_nodes = list(self.visit_node(node, graph))
 
-            # Perform pre-update initializations
+            # Perform pre-update initializations to infinity (prevents infinite loops)
             for n in new_nodes + [node]:
                 n.data.setdefault("reaction_number", math.inf)  # necessary for check below
-            if any(isinstance(n, OrNode) and n.is_expanded for n in new_nodes):
-                min_cost_ancestors = self._get_min_cost_ancenstors(
-                    graph, set(new_nodes) | {node}  # type: ignore[arg-type]  # confusion about AndOrGraph type
-                )
-                for n in min_cost_ancestors:
-                    n.data.setdefault("reaction_number", math.inf)  # necessary for check below
-                init_str = f" initialized {len(min_cost_ancestors)} ancestors"
-            else:
-                min_cost_ancestors = set()
-                init_str = " no ancestors initialized"
+            min_cost_ancestors = self._get_min_cost_ancenstors(
+                graph, set(new_nodes) | {node}  # type: ignore[arg-type]  # confusion about AndOrGraph type
+            )
+            for n in min_cost_ancestors:
+                n.data["reaction_number"] = math.inf
+            init_str = f" initialized {len(min_cost_ancestors)} ancestors"
 
             # Update values of expanded node, current node, and ancestors
             nodes_updated = self.set_node_values(
@@ -422,9 +421,6 @@ def best_retro_star_value_update(node: ANDOR_NODE, graph: AndOrGraph) -> bool:
     Information from the algorithm on whether a node can be expanded comes from "retro_star_can_expand" attribute.
 
     For an AND node, it should just be the best minimum of its children's best retro* values.
-    However, because we want to use these values to descend the tree later we will adopt a more restrictive definition:
-    if is the minimum of its children's best retro* value for the children whose minimum cost synthesis path includes this AND node.
-    This should avoid cycles.
     """
 
     children = list(graph.successors(node))
@@ -437,9 +433,7 @@ def best_retro_star_value_update(node: ANDOR_NODE, graph: AndOrGraph) -> bool:
     elif isinstance(node, AndNode):
         new_value = math.inf  # default
         for child in children:
-            if math.isclose(node.data["retro_star_value"], child.data["retro_star_value"]):
-                # This is a child whose minimum cost synthesis tree includes this AND node
-                new_value = min(new_value, child.data["best_retro_star_value"])
+            new_value = min(new_value, child.data["best_retro_star_value"])
     else:
         raise TypeError("Unexpected node type")
 
