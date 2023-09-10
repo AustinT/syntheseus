@@ -175,20 +175,6 @@ class RetroStarSearch(
             )
         )
 
-        # Perform bottom-up update of best retro-star value
-        nodes_to_update.update(
-            cast(
-                Collection[ANDOR_NODE],
-                run_message_passing(
-                    graph=graph,
-                    nodes=sorted(nodes_to_update, key=lambda node: node.depth, reverse=True),
-                    update_fns=[best_retro_star_value_update],  # type: ignore[list-item]  # confusion about AndOrGraph type
-                    update_predecessors=True,
-                    update_successors=False,
-                ),
-            )
-        )
-
         return nodes_to_update
 
     def _descend_tree_and_choose_node(self, graph) -> OrNode:
@@ -306,6 +292,7 @@ class RetroStarSearch(
             )
             for n in min_cost_ancestors:
                 n.data["reaction_number"] = math.inf
+                n.data["retro_star_value"] = math.inf
             init_str = f" initialized {len(min_cost_ancestors)} ancestors"
 
             # Update values of expanded node, current node, and ancestors
