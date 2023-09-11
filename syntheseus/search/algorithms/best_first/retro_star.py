@@ -226,15 +226,15 @@ class RetroStarSearch(
         self, graph: AndOrGraph, nodes: set[ANDOR_NODE]
     ) -> set[ANDOR_NODE]:
         """Retrive ancestor nodes whose minimum cost path depends on a given set of nodes."""
-        ancenstor_nodes: set[ANDOR_NODE] = set()  # only nodes which have already been processed
+        ancestor_nodes: set[ANDOR_NODE] = set()  # only nodes which have already been processed
         queue = deque(nodes)  # only confirmed ancestors added (not yet processed)
         while len(queue) > 0:
             node = queue.popleft()
 
             # If the node has already been processed, skip it (don't process it multiple times)
-            if node in ancenstor_nodes:
+            if node in ancestor_nodes:
                 continue
-            ancenstor_nodes.add(node)
+            ancestor_nodes.add(node)
 
             # Add parents to the queue if they are eligible
             for parent in graph.predecessors(node):
@@ -252,7 +252,7 @@ class RetroStarSearch(
                             parent.data["reaction_number"], parent.data["retro_star_mol_cost"]
                         )
                         and not any(  # has a sibling with the same reaction number
-                            sibling not in ancenstor_nodes
+                            sibling not in ancestor_nodes
                             and math.isclose(
                                 sibling.data["reaction_number"], node.data["reaction_number"]
                             )
@@ -260,7 +260,7 @@ class RetroStarSearch(
                         )
                     ):
                         queue.append(parent)
-        return ancenstor_nodes
+        return ancestor_nodes
 
     def _run_from_graph_after_setup(self, graph) -> int:
         # Logging setup
