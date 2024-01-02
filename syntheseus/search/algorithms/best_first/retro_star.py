@@ -47,6 +47,10 @@ class RetroStarSearch(
         self.and_node_cost_fn = and_node_cost_fn
 
     @property
+    def requires_tree(self) -> bool:
+        return False
+
+    @property
     def reaction_number_estimator(self) -> BaseNodeEvaluator[OrNode]:
         """Alias for value function (they use this term in the paper)"""
         return self.value_function
@@ -92,7 +96,7 @@ class RetroStarSearch(
                 for node in output_nodes
                 if isinstance(node, OrNode)
                 and "reaction_number_estimate" not in node.data
-                and not node.is_expanded
+                and self.can_expand_node(node, graph)
             ],
             graph=graph,
         )
@@ -166,9 +170,10 @@ class RetroStarSearch(
 
 def reaction_number_update(node: ANDOR_NODE, graph: AndOrGraph) -> bool:
     """
-    Updates a node's "reaction number", which is the current minimum cost
-    estimate of synthesizing a molecule from everything below it.
-    Returns whether the node's reaction number was updated.
+    Updates a node's "reaction number", which is the lowest total
+    cost of any minimal AND/OR graph containing this node,
+    rooted at the root node, assuming that the cost of any leaf
+    node is its reaction number.
     """
     if isinstance(node, AndNode):
         # Reaction number from equation 7 in Retro*
@@ -183,9 +188,9 @@ def reaction_number_update(node: ANDOR_NODE, graph: AndOrGraph) -> bool:
         if node.is_expanded:
             # If the node is expanded, the cost of each child is also an option
             possible_costs.extend([c.data["reaction_number"] for c in graph.successors(node)])
-        else:
+        elif "reaction_number_estimate" in node.data:
             # Otherwise the cost of the reaction number estimate is an option.
-            # This estimate must be present!
+            # By design, it will only be present if the node can be expanded
             possible_costs.append(node.data["reaction_number_estimate"])
         new_rn = min(possible_costs)
     else:
@@ -234,15 +239,8 @@ def retro_star_value_update(node: ANDOR_NODE, graph: AndOrGraph) -> bool:
         if len(parents) == 0:
             # Root node
             new_value = node.data["reaction_number"]
-        elif len(parents) == 1:
-            # r* is parent's r*
-            parent = parents[0]
-            assert isinstance(parent, AndNode)
-            new_value = parent.data["retro_star_value"]
         else:
-            raise ValueError(
-                f"Nodes with multiple parents not supported. {node} has {len(parents)} parents."
-            )
+            new_value = min(p.data["retro_star_value"] for p in parents)
 
     else:
         raise TypeError("Unexpected node type")
