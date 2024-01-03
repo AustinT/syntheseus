@@ -156,7 +156,7 @@ class RetroStarSearch(
         )
         logger.log(
             logging.DEBUG - 1,
-            f"Reaction number updates: {len(rn_nodes)}  / {len(graph)} nodes updated in {rn_iter} iterations",
+            f"Reaction number updates: {len(rn_nodes)} / {len(graph)} nodes updated in {rn_iter} iterations",
         )
         nodes_to_update.update(rn_nodes)
 
