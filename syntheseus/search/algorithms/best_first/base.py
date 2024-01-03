@@ -69,53 +69,57 @@ class GeneralBestFirstSearch(SearchAlgorithm[GraphType, int], Generic[GraphType]
         # Run search until time limit or queue is empty
         step = 0
         for step in range(self.limit_iterations):
-            if self.should_stop_search(graph) or len(queue) == 0:
+            if self.should_stop_search(graph):
                 break
 
-            # Pop node and potentially expand it
-            priority, _, node = heapq.heappop(queue)
-            assert priority < math.inf, "inf priority should not be in the queue"
+            # Take nodes from the priority queue until a node eligible for expansion is found
+            found_node = False
+            while len(queue) > 0 and not found_node:
+                priority, _, node = heapq.heappop(queue)
+                assert priority < math.inf, "inf priority should not be in the queue"
 
-            # Re-calculate priority in case it changed since it was added to the queue
-            latest_priority = self.priority_function(node, graph)
+                # Re-calculate priority in case it changed since it was added to the queue
+                latest_priority = self.priority_function(node, graph)
 
-            # Decide between 3 options: discarding the node, re-inserting it,
-            # or visiting it (which most likely means expanding it)
-            if not self.node_eligible_for_queue(node, graph):
-                action = "discarded (already expanded/not eligible for queue)"
-            elif not math.isclose(priority, latest_priority):
-                # Re-insert the node with the correct priority,
-                # unless the new priority is inf
-                priority_change_str = f"(priority changed from {priority} to {latest_priority})"
-                if latest_priority < math.inf:
-                    action = f"re-inserted {priority_change_str}"
-                    heapq.heappush(queue, (latest_priority, tie_breaker, node))
-                    tie_breaker += 1
+                # If the node is no longer eligible for the queue, skip it
+                if not self.node_eligible_for_queue(node, graph):
+                    logger.log(log_level, f"Node {node} is no longer eligible for the queue")
+                elif not math.isclose(priority, latest_priority):
+                    # Re-insert the node with the correct priority,
+                    # unless the new priority is inf
+                    priority_change_str = f"(priority changed from {priority} to {latest_priority})"
+                    if latest_priority < math.inf:
+                        logger.log(log_level, f"Re-inserted node whose {priority_change_str}")
+                        heapq.heappush(queue, (latest_priority, tie_breaker, node))
+                        tie_breaker += 1
+                    else:
+                        logger.log(log_level, f"Discarded node whose {priority_change_str}")
                 else:
-                    action = f"discarded {priority_change_str}"
-            else:
-                # Visit node
-                new_nodes = list(self.visit_node(node, graph))
+                    found_node = True
+            if not found_node:
+                logger.log(log_level, "Queue is empty, stopping search.")
+                break
 
-                # Update node values
-                nodes_updated = self.set_node_values(new_nodes + [node], graph)
+            # Visit node
+            new_nodes = list(self.visit_node(node, graph))
 
-                # Add new eligible nodes to the queue, since
-                # their priority may have changed.
-                # dict.fromkeys is to preserve order and uniqueness
-                for updated_node in dict.fromkeys(new_nodes + list(nodes_updated)):
-                    if self.node_eligible_for_queue(updated_node, graph):
-                        updated_node_priority = self.priority_function(updated_node, graph)
-                        if updated_node_priority < math.inf:
-                            heapq.heappush(
-                                queue, (updated_node_priority, tie_breaker, updated_node)
-                            )
-                            tie_breaker += 1
+            # Update node values
+            nodes_updated = self.set_node_values(new_nodes + [node], graph)
 
-                # Log str
-                action = f"visited, {len(new_nodes)} new nodes created, {len(nodes_updated)} nodes updated)"
+            # Add new eligible nodes to the queue, since
+            # their priority may have changed.
+            # dict.fromkeys is to preserve order and uniqueness
+            for updated_node in dict.fromkeys(new_nodes + list(nodes_updated)):
+                if self.node_eligible_for_queue(updated_node, graph):
+                    updated_node_priority = self.priority_function(updated_node, graph)
+                    if updated_node_priority < math.inf:
+                        heapq.heappush(queue, (updated_node_priority, tie_breaker, updated_node))
+                        tie_breaker += 1
 
-            # Log
+            # Log results from this iter
+            action = (
+                f"visited, {len(new_nodes)} new nodes created, {len(nodes_updated)} nodes updated)"
+            )
             if logger_active:
                 logger.log(
                     log_level,
