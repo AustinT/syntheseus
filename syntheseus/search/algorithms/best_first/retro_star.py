@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import logging
 import math
+from collections import defaultdict, deque
 from collections.abc import Sequence
 
 # NOTE: Collection imported here instead of from collections.abc
 # to make casting work for python <3.9
 from typing import (
+    Callable,
     Collection,
     Optional,
     cast,
@@ -15,8 +18,9 @@ from syntheseus.search.algorithms.base import AndOrSearchAlgorithm
 from syntheseus.search.algorithms.best_first.base import GeneralBestFirstSearch
 from syntheseus.search.algorithms.mixins import ValueFunctionMixin
 from syntheseus.search.graph.and_or import ANDOR_NODE, AndNode, AndOrGraph, OrNode
-from syntheseus.search.graph.message_passing import run_message_passing
 from syntheseus.search.node_evaluation.base import BaseNodeEvaluator, NoCacheNodeEvaluator
+
+logger = logging.getLogger(__name__)
 
 
 class MolIsPurchasableCost(NoCacheNodeEvaluator[OrNode]):
@@ -130,40 +134,50 @@ class RetroStarSearch(
             node.data.setdefault("reaction_number", math.inf)
             node.data.setdefault("retro_star_value", math.inf)
         nodes_to_update = set(cast(Collection[ANDOR_NODE], nodes))
+        logger.log(logging.DEBUG - 1, f"Starting with {len(nodes_to_update)} nodes to update")
 
         # NOTE: the following updates assume that depth is set correctly.
+
+        trigger_n = 1_000
+        reset_n = 100
 
         # Perform bottom-up update of `reaction number`,
         # sorting by decreasing depth and not updating children for efficiency
         # (reaction number depends only on children)
-        nodes_to_update.update(
-            cast(  # mypy doesn't know that `run_message_passing` returns a `Collection[ANDOR_NODE]`
-                Collection[ANDOR_NODE],
-                run_message_passing(
-                    graph=graph,
-                    nodes=sorted(nodes_to_update, key=lambda node: node.depth, reverse=True),
-                    update_fns=[reaction_number_update],  # type: ignore[list-item]  # confusion about AndOrGraph type
-                    update_predecessors=True,
-                    update_successors=False,
-                ),
-            )
+        rn_nodes, rn_iter = robust_message_passing(
+            nodes=sorted(nodes_to_update, key=lambda node: node.depth, reverse=True),
+            graph=graph,
+            update_fn=reaction_number_update,
+            update_predecessors=True,
+            update_successors=False,
+            reset_function=lambda node, graph: node.data.__setitem__("reaction_number", math.inf),
+            num_visits_to_trigger_reset=trigger_n,
+            reset_visit_threshold=reset_n,
         )
+        logger.log(
+            logging.DEBUG - 1,
+            f"Reaction number updates: {len(rn_nodes)} updated in {rn_iter} iterations",
+        )
+        nodes_to_update.update(rn_nodes)
 
         # Perform top-down update of retro-star value,
         # sorting by increasing depth and not updating parents for efficiency
         # (retro star value depends only on parents)
-        nodes_to_update.update(
-            cast(
-                Collection[ANDOR_NODE],
-                run_message_passing(
-                    graph=graph,
-                    nodes=sorted(nodes_to_update, key=lambda node: node.depth, reverse=False),
-                    update_fns=[retro_star_value_update],  # type: ignore[list-item]  # confusion about AndOrGraph type
-                    update_predecessors=False,
-                    update_successors=True,
-                ),
-            )
+        rv_nodes, rv_iter = robust_message_passing(
+            nodes=sorted(nodes_to_update, key=lambda node: node.depth, reverse=False),
+            graph=graph,
+            update_fn=retro_star_value_update,
+            update_predecessors=False,
+            update_successors=True,
+            reset_function=lambda node, graph: node.data.__setitem__("retro_star_value", math.inf),
+            num_visits_to_trigger_reset=trigger_n,
+            reset_visit_threshold=reset_n,
         )
+        logger.log(
+            logging.DEBUG - 1,
+            f"Retro star value updates: {len(rv_nodes)} updated in {rv_iter} iterations",
+        )
+        nodes_to_update.update(rv_nodes)
 
         return nodes_to_update
 
@@ -249,3 +263,71 @@ def retro_star_value_update(node: ANDOR_NODE, graph: AndOrGraph) -> bool:
     old_value = node.data["retro_star_value"]
     node.data["retro_star_value"] = new_value
     return not math.isclose(new_value, old_value)
+
+
+message_passing_logger = logging.getLogger("retro-star-robust-message-passing")
+
+
+def robust_message_passing(
+    nodes: Collection[ANDOR_NODE],
+    graph: AndOrGraph,
+    update_fn: Callable[[ANDOR_NODE, AndOrGraph], bool],
+    update_predecessors: bool = True,
+    update_successors: bool = True,
+    reset_function: Optional[Callable[[ANDOR_NODE, AndOrGraph], None]] = None,
+    num_visits_to_trigger_reset: int = 10_000,
+    reset_visit_threshold: int = 1000,
+) -> tuple[set[ANDOR_NODE], int]:
+    """
+    Modified version of message passing which tracks how many times each node has
+    been visited and will "reset" nodes which have been visited too many times.
+    This reset uperation can be customized using the `reset_function` argument.
+
+    Specifically, once a node has been updated at least `num_visits_to_trigger_reset` times,
+    all nodes visited more than `reset_visit_threshold` times are reset using the `reset_function`.
+    """
+
+    assert num_visits_to_trigger_reset >= reset_visit_threshold
+
+    # Initialize
+    update_queue = deque(nodes)
+    node_to_num_update_without_reset: defaultdict[ANDOR_NODE, int] = defaultdict(int)
+
+    def _queue_adding(node):
+        if update_predecessors:
+            update_queue.extend(graph.predecessors(node))
+        if update_successors:
+            update_queue.extend(graph.successors(node))
+
+    # Visit nodes
+    n_iter = 0
+    while len(update_queue) > 0:
+        n_iter += 1
+        node = update_queue.popleft()
+
+        # Perform standard update
+        if update_fn(node, graph):
+            node_to_num_update_without_reset[node] += 1
+            _queue_adding(node)
+
+            # Possibly add
+            if (
+                node_to_num_update_without_reset[node] >= num_visits_to_trigger_reset
+                and reset_function is not None
+            ):
+                message_passing_logger.debug("Doing reset")
+
+                # Reset all nodes updated too many times
+                for n, num_updates in node_to_num_update_without_reset.items():
+                    if num_updates >= reset_visit_threshold:
+                        reset_function(n, graph)
+                        node_to_num_update_without_reset[n] = 0
+                        update_queue.append(
+                            n
+                        )  # we updated its value so it should go back into the queue
+                        if (
+                            n is not node
+                        ):  # don't add children of the node we're currently updating twice
+                            _queue_adding(n)
+
+    return set(node_to_num_update_without_reset.keys()), n_iter
