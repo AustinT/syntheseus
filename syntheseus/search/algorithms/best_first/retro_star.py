@@ -144,7 +144,7 @@ class RetroStarSearch(
         # Perform bottom-up update of `reaction number`,
         # sorting by decreasing depth and not updating children for efficiency
         # (reaction number depends only on children)
-        rn_nodes, rn_iter = robust_message_passing(
+        rn_nodes, rn_iter, _ = robust_message_passing(
             nodes=sorted(nodes_to_update, key=lambda node: node.depth, reverse=True),
             graph=graph,
             update_fn=reaction_number_update,
@@ -163,7 +163,7 @@ class RetroStarSearch(
         # Perform top-down update of retro-star value,
         # sorting by increasing depth and not updating parents for efficiency
         # (retro star value depends only on parents)
-        rv_nodes, rv_iter = robust_message_passing(
+        rv_nodes, rv_iter, _ = robust_message_passing(
             nodes=sorted(nodes_to_update, key=lambda node: node.depth, reverse=False),
             graph=graph,
             update_fn=retro_star_value_update,
@@ -277,7 +277,7 @@ def robust_message_passing(
     reset_function: Optional[Callable[[ANDOR_NODE, AndOrGraph], None]] = None,
     num_visits_to_trigger_reset: int = 10_000,
     reset_visit_threshold: int = 1000,
-) -> tuple[set[ANDOR_NODE], int]:
+) -> tuple[set[ANDOR_NODE], int, int]:
     """
     Modified version of message passing which tracks how many times each node has
     been visited and will "reset" nodes which have been visited too many times.
@@ -301,6 +301,7 @@ def robust_message_passing(
 
     # Visit nodes
     n_iter = 0
+    n_reset = 0
     while len(update_queue) > 0:
         n_iter += 1
         node = update_queue.popleft()
@@ -316,6 +317,7 @@ def robust_message_passing(
                 and reset_function is not None
             ):
                 message_passing_logger.debug("Doing reset")
+                n_reset += 1
 
                 # Reset all nodes updated too many times
                 for n, num_updates in node_to_num_update_without_reset.items():
@@ -330,4 +332,4 @@ def robust_message_passing(
                         ):  # don't add children of the node we're currently updating twice
                             _queue_adding(n)
 
-    return set(node_to_num_update_without_reset.keys()), n_iter
+    return set(node_to_num_update_without_reset.keys()), n_iter, n_reset
