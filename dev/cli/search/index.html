@@ -8,28 +8,28 @@
       
       
       
-        <link rel="canonical" href="https://microsoft.github.io/syntheseus/dev/installation/">
+        <link rel="canonical" href="https://microsoft.github.io/syntheseus/dev/cli/search/">
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../eval_single_step/">
       
       
-        <link rel="next" href="../single_step/">
+        <link rel="next" href="../../tutorials/quick_start/">
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.13">
     
     
       
-        <title>Installation - Syntheseus</title>
+        <title>Running Search - Syntheseus</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.7e359304.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e359304.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -48,7 +48,7 @@
       
     
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#reducing-the-number-of-dependencies" class="md-skip">
+        <a href="#running-search" class="md-skip">
           Skip to content
         </a>
       
@@ -92,7 +92,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Syntheseus" class="md-header__button md-logo" aria-label="Syntheseus" data-md-component="logo">
+    <a href="../.." title="Syntheseus" class="md-header__button md-logo" aria-label="Syntheseus" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Installation
+              Running Search
             
           </span>
         </div>
@@ -180,13 +180,11 @@
         
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href=".." class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../.." class="md-tabs__link">
           
   
   Get Started
@@ -200,11 +198,13 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../cli/eval_single_step/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../eval_single_step/" class="md-tabs__link">
           
   
   CLI
@@ -222,7 +222,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../tutorials/quick_start/" class="md-tabs__link">
+        <a href="../../tutorials/quick_start/" class="md-tabs__link">
           
   
   Tutorials
@@ -255,7 +255,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Syntheseus" class="md-nav__button md-logo" aria-label="Syntheseus" data-md-component="logo">
+    <a href="../.." title="Syntheseus" class="md-nav__button md-logo" aria-label="Syntheseus" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -282,28 +282,23 @@
       
   
   
-    
   
   
-  
     
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
         
           
-          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -314,7 +309,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_1">
             <span class="md-nav__icon md-icon"></span>
             Get Started
@@ -328,7 +323,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -346,28 +341,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Installation
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -376,33 +353,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#reducing-the-number-of-dependencies" class="md-nav__link">
-    <span class="md-ellipsis">
-      Reducing the number of dependencies
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -415,7 +365,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../single_step/" class="md-nav__link">
+      <a href="../../single_step/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -440,23 +390,28 @@
       
   
   
+    
   
   
+  
     
     
     
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -467,7 +422,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             CLI
@@ -481,7 +436,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/eval_single_step/" class="md-nav__link">
+      <a href="../eval_single_step/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -499,10 +454,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../cli/search/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Running Search
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -511,6 +486,44 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuring-the-search-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring the search algorithm
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -568,7 +581,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/quick_start/" class="md-nav__link">
+      <a href="../../tutorials/quick_start/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -589,7 +602,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/custom_model/" class="md-nav__link">
+      <a href="../../tutorials/custom_model/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -627,6 +640,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -635,9 +650,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#reducing-the-number-of-dependencies" class="md-nav__link">
+  <a href="#usage" class="md-nav__link">
     <span class="md-ellipsis">
-      Reducing the number of dependencies
+      Usage
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuring-the-search-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring the search algorithm
     </span>
   </a>
   
@@ -661,78 +685,26 @@
   
 
 
-  <h1>Installation</h1>
-
-<p>We support two installation modes:</p>
-<ul>
-<li><em>core installation</em> allows you to build and benchmark your own models or search algorithms</li>
-<li><em>full installation</em> also allows you to perform end-to-end search using the supported models</li>
-</ul>
-<p>There are also two installation sources:</p>
-<ul>
-<li><em>pip</em>, which provides the most recent released version</li>
-<li><em>GitHub</em>, which provides the latest changes but may be less stable and may not be
-  backward-compatible with the latest released version</li>
-</ul>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:4"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Core (pip)</label><label for="__tabbed_1_2">Full (pip)</label><label for="__tabbed_1_3">Core (GitHub)</label><label for="__tabbed_1_4">Full (GitHub)</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment.yml
-conda<span class="w"> </span>activate<span class="w"> </span>syntheseus
-
-pip<span class="w"> </span>install<span class="w"> </span>syntheseus
+<h1 id="running-search">Running Search</h1>
+<h2 id="usage">Usage</h2>
+<div class="highlight"><pre><span></span><code>syntheseus search \
+    search_targets_file=[SMILES_FILE_WITH_SEARCH_TARGETS] \
+    inventory_smiles_file=[SMILES_FILE_WITH_PURCHASABLE_MOLECULES] \
+    model_class=[MODEL_CLASS] \
+    model_dir=[MODEL_DIR] \
+    time_limit_s=[NUMBER_OF_SECONDS_PER_TARGET]
 </code></pre></div>
+<p>Both the search targets and the purchasable molecules inventory are expected to be plain SMILES files, with one molecule per line.</p>
+<p>The <code>search</code> command accepts further arguments to configure the search algorithm; see <code>SearchConfig</code> in <code>cli/search.py</code> for the complete list.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>When using one of the natively supported single-step models you can omit <code>model_dir</code>, which will cause <code>syntheseus</code> to use a default checkpoint trained on USPTO-50K (see <a href="../../single_step/">here</a> for details).</p>
 </div>
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment_full.yml
-conda<span class="w"> </span>activate<span class="w"> </span>syntheseus-full
-
-pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;syntheseus[all]&quot;</span>
-</code></pre></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment.yml
-conda<span class="w"> </span>activate<span class="w"> </span>syntheseus
-
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
-</code></pre></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment_full.yml
-conda<span class="w"> </span>activate<span class="w"> </span>syntheseus-full
-
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[all]&quot;</span>
-</code></pre></div>
-</div>
-</div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Make sure you are viewing the version of the docs matching your <code>syntheseus</code> installation.
-Select the <code>x.y.z</code> version you installed if you used <code>pip</code> (go <a href="https://microsoft.github.io/syntheseus/stable/">here</a> for the latest one),
-or <a href="https://microsoft.github.io/syntheseus/dev/">dev</a> if you installed <code>syntheseus</code> directly from GitHub.</p>
-</div>
-<p>Core installation includes only minimal dependencies (no ML libraries), while full installation includes all supported models and also dependencies for visualization/development.</p>
-<p>Instructions above assume you already cloned the repository via</p>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/microsoft/syntheseus.git
-<span class="nb">cd</span><span class="w"> </span>syntheseus
-</code></pre></div>
-<p>Note that <code>environment_full.yml</code> pins the CUDA version (to 11.3) for reproducibility.
-If you want to use a different one, make sure to edit the environment file accordingly.</p>
-<details class="info">
-<summary>Setting up GLN</summary>
-<p>We also support GLN, but it requires a specialized environment and is thus not installed via <code>pip</code>.
-See <a href="https://github.com/microsoft/syntheseus/blob/main/syntheseus/reaction_prediction/environment_gln/Dockerfile">here</a> for a Docker environment necessary for running GLN.</p>
-</details>
-<h2 id="reducing-the-number-of-dependencies">Reducing the number of dependencies</h2>
-<p>To keep the environment smaller, you can replace the <code>all</code> option with a comma-separated subset of <code>{chemformer,local-retro,megan,mhn-react,retro-knn,root-aligned,viz,dev}</code> (<code>viz</code> and <code>dev</code> correspond to visualization and development dependencies, respectively).
-For example, <code>pip install -e ".[local-retro,root-aligned]"</code> installs only LocalRetro and RootAligned.
-If installing a subset of models, you can also delete the lines in <code>environment_full.yml</code> marked with names of models you do not wish to use.</p>
-<p>If you only want to use a very specific part of <code>syntheseus</code>, you could also install it without dependencies:</p>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w">  </span>--no-dependencies
-</code></pre></div>
-<p>You then would need to manually install a subset of dependencies that are required for a particular functionality you want to access.
-See <code>pyproject.toml</code> for a list of dependencies tied to the <code>search</code> and <code>reaction_prediction</code> subpackages.</p>
+<h2 id="configuring-the-search-algorithm">Configuring the search algorithm</h2>
+<p>You can set the search algorithm explicitly using the <code>search_algorithm</code> argument to <code>retro_star</code> (default), <code>mcts</code> or <code>pdvn</code>.
+For all of those algorithms you can vary hyperparameters such as the policy/value functions or MCTS bound type/constant.</p>
+<p>In practice however there may be no need to override any hyperparameters, especially if combining Retro* or MCTS with one of the natively supported models, as for those <code>syntheseus</code> will automatically choose sensible hyperparameter defaults (listed in <code>cli/search_config.yml</code>).
+<a href="https://arxiv.org/abs/2310.19796">In our experience</a> both Retro* and MCTS show similar performance when tuned properly, but you may want to try both for your particular usecase and see which one works best empirically.</p>
 
 
 
@@ -779,10 +751,10 @@ See <code>pyproject.toml</code> for a list of dependencies tied to the <code>sea
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy", "navigation.tabs"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "stable", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tabs"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "stable", "provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.c8d2eff1.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
       
     
   </body>
